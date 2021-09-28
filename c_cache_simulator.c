@@ -2,23 +2,28 @@
 #include <stdio.h>
 #include <getopt.h>
 #include <stdlib.h>
+
 typedef struct line {
     int valid_bit;
     int tag;
     int modified;
     struct line* next;
 } line;
+
 typedef struct set {
     struct set* next;
     line* first_line;
 } set;
+
 typedef struct cache {
     set* set_list;
     int cur_access_num;
 } cache;
+
 int hits = 0;
 int misses = 0;
 int evictions = 0;
+
 cache* initialize_cache(int s, int E, int b) {
     cache* empty_cache = malloc(sizeof(cache));
     empty_cache->set_list = malloc(sizeof(set));
@@ -50,6 +55,7 @@ cache* initialize_cache(int s, int E, int b) {
     empty_cache->cur_access_num = 0;
     return empty_cache;
 }
+
 int get_set(int mem_address, int s, int b) {
     int mask = 1 << 31;
     mask = mask >> (31 - s);
@@ -61,6 +67,7 @@ int get_tag(int mem_address, int s, int b) {
     int to_return = ~mask & (mem_address >> (b + s));
     return to_return;
 }
+
 void free_set(set* set_to_free) {
     line* cur_line = set_to_free->first_line;
     line* temp_line = set_to_free->first_line;
@@ -71,6 +78,7 @@ void free_set(set* set_to_free) {
     }
     free(set_to_free);
 }
+
 void free_cache(cache* cache) {
     set* cur_set = cache->set_list;
     set* temp_set = cache->set_list;
@@ -81,6 +89,7 @@ void free_cache(cache* cache) {
     }
     free(cache);
 }
+
 void insert_line(cache* cache, set* set, int E, int line_tag) {
     line* cur_line = set->first_line;
     if (cur_line->valid_bit == 0) {
@@ -117,8 +126,8 @@ void insert_line(cache* cache, set* set, int E, int line_tag) {
     evictions++;
     return;
 }
-void simulate_cache(cache* cache, char access_type, int mem_address, int s, int E, int b) {
-    
+
+void simulate_cache(cache* cache, char access_type, int mem_address, int s, int E, int b) { 
     set* cur_set = cache->set_list;
     int set_index = get_set(mem_address, s, b);
     for(int i = 0; i < set_index; i++) {
@@ -171,8 +180,7 @@ void simulate_cache(cache* cache, char access_type, int mem_address, int s, int 
     }
 }
          
-int main(int argc, char* argv[])
-{
+int main(int argc, char* argv[]) {
     char curr_str[16];
     char access_type;
     int mem_address;
